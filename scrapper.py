@@ -6,10 +6,8 @@ from bot import SubscriberBot
 class Scrapper:
 
     def __init__(self, loop, bot: SubscriberBot):
-        self.config = configparser.ConfigParser()
-        self.config.read('config.ini')
-        self.api_id = int(self.config.get('API', 'api_id'))
-        self.api_hash = self.config.get('API', 'api_hash')
+        self.api_id = bot.api_id
+        self.api_hash = bot.api_hash
         self.client: TelegramClient
         self.event_loop = loop
         self.subscriber_bot = bot

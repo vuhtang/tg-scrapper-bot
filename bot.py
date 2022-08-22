@@ -5,12 +5,12 @@ import re
 
 class SubscriberBot:
 
-    def __init__(self, loop):
+    def __init__(self, loop, api_id, api_hash, bot_token):
         self.config = configparser.ConfigParser()
         self.config.read('config.ini')
-        self.api_id = int(self.config.get('API', 'api_id'))
-        self.api_hash = self.config.get('API', 'api_hash')
-        self.bot_token = self.config.get('API', 'bot_token')
+        self.api_id = api_id
+        self.api_hash = api_hash
+        self.bot_token = bot_token
         self.bot: TelegramClient
         self.event_loop = loop
 
