@@ -26,6 +26,10 @@ class SubscriberBot:
 
         @self.bot.on(events.NewMessage(pattern='/start'))
         async def command_start(event):
+            if self.subscriber != -1:
+                reply_message = self.config.get('Messages', 'reject')
+                await self.bot.send_message(event.sender_id, reply_message)
+                return
             reply_message = self.config.get('Messages', 'start')
             sender_id = event.sender_id
             self.subscriber = sender_id
@@ -38,30 +42,39 @@ class SubscriberBot:
 
         @self.bot.on(events.NewMessage(pattern='/subs'))
         async def command_subs(event):
-            reply_message = "Ваши текущие подписки:"
-            for subb in self.subscriptions:
-                reply_message += "\n" + subb
-            sender = await event.get_sender()
-            await self.bot.send_message(sender.id, reply_message)
+            if self.subscriber != -1:
+                reply_message = "Ваши текущие подписки:"
+                for subb in self.subscriptions:
+                    reply_message += "\n" + subb
+                await self.bot.send_message(event.sender_id, reply_message)
 
         @self.bot.on(events.NewMessage(pattern='/addsub'))
         async def command_add_sub(event):
-            enter_text = self.config.get('Messages', 'enter_username_add')
-            username = await request_username(event, enter_text)
-            if username == '':
-                return
-            self.subscriptions.add(username)
-            save_subscriptions()
+            if self.subscriber != -1:
+                enter_message = self.config.get('Messages', 'enter_username_add')
+                username = await request_username(event, enter_message)
+                if username == '':
+                    return
+                self.subscriptions.add(username)
+                save_subscriptions()
 
         @self.bot.on(events.NewMessage(pattern='/delsub'))
         async def command_del_sub(event):
-            enter_text = self.config.get('Messages', 'enter_username_del')
-            username = await request_username(event, enter_text)
-            if username == '':
-                return
-            if username in self.subscriptions:
-                self.subscriptions.remove(username)
-                save_subscriptions()
+            if self.subscriber != -1:
+                enter_message = self.config.get('Messages', 'enter_username_del')
+                username = await request_username(event, enter_message)
+                if username == '':
+                    return
+                if username in self.subscriptions:
+                    self.subscriptions.remove(username)
+                    save_subscriptions()
+
+        @self.bot.on(events.NewMessage(pattern='/cancel'))
+        async def command_cancel(event):
+            if self.subscriber != -1:
+                self.subscriber = -1
+                reply_message = self.config.get('Messages', 'cancel')
+                await self.bot.send_message(event.sender_id, reply_message)
 
         def save_subscriptions():
             subs = ''
