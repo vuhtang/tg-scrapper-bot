@@ -35,9 +35,9 @@ class SubscriberBot:
             self.subscriber = sender_id
             await self.bot.send_message(sender_id, reply_message)
 
-        @self.bot.on(events.NewMessage(pattern='/help'))
+        @self.bot.on(events.NewMessage(pattern='/info'))
         async def command_help(event):
-            reply_message = self.config.get('Messages', 'help')
+            reply_message = self.config.get('Messages', 'info')
             await self.bot.send_message(event.sender_id, reply_message)
 
         @self.bot.on(events.NewMessage(pattern='/subs'))
